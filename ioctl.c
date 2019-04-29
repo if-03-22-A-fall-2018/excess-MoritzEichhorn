@@ -22,29 +22,61 @@ main(int argc,char *argv[])
 
   int line = 0;
   int chars_of_lines = 0;
+	int page = 1;
 
   while(crnt_char != -1)
   {
-    while(line < row-1)
+    while(line < page*(row-1))
     {
-      while(chars_of_lines <= col)
+      while(chars_of_lines < col)
       {
-        if(crnt_char == '\n')
-        {
-          chars_of_lines = col+1;
-        }
-        else {
-          printf("%c", crnt_char);
-          chars_of_lines++;
-        }
+        printf("%c", crnt_char);
+        chars_of_lines++;
+				if(crnt_char == '\n')
+				{
+					chars_of_lines = col+1;
+
+				}
         crnt_char = fgetc(fd);
+				if(crnt_char == -1)
+				{
+					chars_of_lines = col;
+					line = page*(row-1);
+				}
       }
-      printf("\n");
       chars_of_lines = 0;
       line++;
     }
-    crnt_char = -1;
+		if(crnt_char != -1)
+		{
+			printf("--More--(Page: %d)",page );
+			int desicion_char = getchar();
+			if(desicion_char != 10)
+			{
+				getchar();
+			}
+
+			if(desicion_char == 'b')
+			{
+				line = 0;
+				fseek(fd, 0, SEEK_SET);
+				crnt_char = fgetc(fd);
+				if(page > 1)
+				{
+					page--;
+				}
+			}
+			else if(desicion_char == 'q')
+			{
+				crnt_char = -1;
+			}
+			else
+			{
+				page++;
+			}
+		}
   }
+	fclose(fd);
 
 	return 0;
 }
